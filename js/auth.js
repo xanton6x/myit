@@ -1,75 +1,60 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import firebaseConfig from "./js/config.js";
+import firebaseConfig from "./config.js"; // תיקון נתיב: אם שניהם בתוך תיקיית js
 
-// שאר הקוד שכתבנו קודם...
-
-console.log("קובץ auth.js נטען בהצלחה"); // אם זה לא מופיע ב-Console, הקובץ לא נטען
-
+// אתחול Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+console.log("מערכת האימות (Auth) הופעלה");
+
+// לוגיקה לכפתור ההתחברות
 const loginBtn = document.getElementById('login-btn');
 
 if (loginBtn) {
     loginBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // מונע מהדף להתרענן
-        console.log("לחיצה זוהתה!"); 
-
-
-// לוגיקה לכפתור ההתחברות (אם אנחנו בדף ה-Login)
-if (loginBtn) {
-    console.log("כפתור ההתחברות זוהה בהצלחה"); // בדיקה שהקוד רץ
-    loginBtn.addEventListener('click', () => {
->>>>>>> 8037dd24a6dba4b8b5cdab01c993a668517c0a3a
+        e.preventDefault(); 
+        
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        console.log("מנסה להתחבר עם:", email);
+
+        console.log("מנסה להתחבר...");
 
         signInWithEmailAndPassword(auth, email, password)
-
-            .then(() => {
-                alert("הצלחת להתחבר!");
-                window.location.href = "dashboard.html";
-            })
-            .catch((error) => {
-                console.error("שגיאה:", error.message);
-
             .then((userCredential) => {
-                console.log("הצלחה!");
+                console.log("התחברת בהצלחה!");
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
-                console.error("קוד שגיאה:", error.code);
->>>>>>> 8037dd24a6dba4b8b5cdab01c993a668517c0a3a
+                console.error("שגיאת התחברות:", error.code);
                 alert("שגיאה: " + error.message);
             });
     });
-} else {
-    console.error("לא נמצא כפתור עם ID בשם login-btn");
 }
 
-// בדיקת מצב משתמש (האם הוא מחובר?)
+// בדיקת מצב משתמש (האם הוא מחובר?) וניתוב דפים
 onAuthStateChanged(auth, (user) => {
-    const currentPage = window.location.pathname;
-    
+    const path = window.location.pathname;
+    const isLoginPage = path.endsWith("index.html") || path === "/" || path.endsWith("/");
+
     if (user) {
         console.log("משתמש מחובר:", user.email);
-        // אם המשתמש מחובר והוא בדף הנחיתה, נעביר אותו פנימה
-        if (currentPage.endsWith("index.html") || currentPage === "/") {
+        if (isLoginPage) {
             window.location.href = "dashboard.html";
         }
     } else {
-        // אם המשתמש לא מחובר והוא מנסה להיכנס לדפים פנימיים
-        if (currentPage.endsWith("dashboard.html") || currentPage.endsWith("admin.html")) {
+        console.log("אין משתמש מחובר");
+        if (!isLoginPage) {
             window.location.href = "index.html";
         }
     }
 });
 
-// פונקציית התנתקות (נשתמש בה בכפתור ה-Logout)
+// פונקציית התנתקות
 export function logout() {
     signOut(auth).then(() => {
         window.location.href = "index.html";
+    }).catch((error) => {
+        console.error("שגיאה בהתנתקות:", error);
     });
 }
