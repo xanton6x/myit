@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import firebaseConfig from "./config.js";
+
+// שאר הקוד שכתבנו קודם...
 
 console.log("קובץ auth.js נטען בהצלחה"); // אם זה לא מופיע ב-Console, הקובץ לא נטען
 
