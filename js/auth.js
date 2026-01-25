@@ -8,19 +8,21 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // לוגיקה לכפתור ההתחברות (אם אנחנו בדף ה-Login)
-const loginBtn = document.getElementById('login-btn');
 if (loginBtn) {
+    console.log("כפתור ההתחברות זוהה בהצלחה"); // בדיקה שהקוד רץ
     loginBtn.addEventListener('click', () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        console.log("מנסה להתחבר עם:", email);
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // התחברות הצליחה - נעבור לדשבורד
+                console.log("הצלחה!");
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
-                alert("שגיאת התחברות: " + error.message);
+                console.error("קוד שגיאה:", error.code);
+                alert("שגיאה: " + error.message);
             });
     });
 }
