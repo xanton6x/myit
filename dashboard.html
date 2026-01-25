@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support - דשבורד משתמש</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="font-bold text-xl">מרכז התמיכה שלי</h1>
+        <button id="logout-btn" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition">התנתק</button>
+    </nav>
+
+    <main class="max-w-4xl mx-auto mt-10 p-6">
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-bold mb-4">פתיחת קריאה חדשה</h2>
+            <div class="space-y-4">
+                <input id="ticket-title" type="text" placeholder="נושא התקלה (למשל: המדפסת לא עובדת)" class="w-full p-3 border rounded focus:ring-2 focus:ring-blue-500">
+                <textarea id="ticket-desc" placeholder="תיאור קצר של הבעיה..." class="w-full p-3 border rounded h-24 focus:ring-2 focus:ring-blue-500"></textarea>
+                <button id="submit-ticket" class="bg-green-600 text-white px-6 py-2 rounded font-bold hover:bg-green-700 transition">שלח קריאת IT</button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">הקריאות שלי</h2>
+            <div id="tickets-container" class="space-y-3">
+                <p class="text-gray-500">טוען קריאות...</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { logout } from "./js/auth.js";
+        document.getElementById('logout-btn').addEventListener('click', logout);
+    </script>
+    <script type="module" src="js/db.js"></script>
+</body>
+</html>
