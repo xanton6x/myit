@@ -1,11 +1,25 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    updateDoc, 
+    doc, 
+    serverTimestamp, 
+    query, 
+    where, 
+    onSnapshot, 
+    orderBy 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import firebaseConfig from "./config.js";
 
+// אתחול Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// פונקציה לשמירת קריאה חדשה
+// --- פונקציות למשתמש רגיל ---
+
+// פתיחת קריאה חדשה
 export async function createTicket(title, description, userEmail) {
     try {
         const docRef = await addDoc(collection(db, "tickets"), {
@@ -13,22 +27,19 @@ export async function createTicket(title, description, userEmail) {
             description: description,
             userEmail: userEmail,
             status: "open",
-            createdAt: serverTimestamp(), // חיוני לחישוב SLA
+            createdAt: serverTimestamp(),
             closedAt: null
         });
-        console.log("קריאה נשמרה עם מזהה:", docRef.id);
-        return { success: true };
+        return { success: true, id: docRef.id };
     } catch (e) {
-        console.error("שגיאה בהוספת קריאה: ", e);
+        console.error("Error adding ticket: ", e);
         return { success: false, error: e };
     }
 }
 
-// פונקציה להצגת קריאות של משתמש ספציפי
+// משיכת קריאות של משתמש ספציפי
 export function getMyTickets(email, callback) {
-    const q = query(collection(db, "tickets"), where("userEmail", "==", email));
-    
-    // onSnapshot גורם לזה להתעדכן אוטומטית בכל שינוי ב-DB
+    const q = query(collection(db, "tickets"), where("userEmail", "==", email), orderBy("createdAt", "desc"));
     return onSnapshot(q, (querySnapshot) => {
         const tickets = [];
         querySnapshot.forEach((doc) => {
@@ -38,12 +49,11 @@ export function getMyTickets(email, callback) {
     });
 }
 
-import { updateDoc, doc, query, collection, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// --- פונקציות לצוות IT (Admin) ---
 
-// פונקציה למשיכת כל הקריאות במערכת (עבור הטכנאי)
+// משיכת כל הקריאות במערכת
 export function getAllTickets(callback) {
     const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
-    
     return onSnapshot(q, (querySnapshot) => {
         const tickets = [];
         querySnapshot.forEach((doc) => {
@@ -53,7 +63,7 @@ export function getAllTickets(callback) {
     });
 }
 
-// פונקציה לסגירת קריאה ועדכון זמן סגירה
+// סגירת קריאה
 export async function closeTicket(ticketId) {
     try {
         const ticketRef = doc(db, "tickets", ticketId);
@@ -63,7 +73,7 @@ export async function closeTicket(ticketId) {
         });
         return { success: true };
     } catch (e) {
-        console.error("שגיאה בסגירת הקריאה:", e);
+        console.error("Error closing ticket: ", e);
         return { success: false };
     }
 }
