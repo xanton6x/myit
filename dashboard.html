@@ -39,66 +39,78 @@
     import { createTicket } from "./js/db.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    import { getMyTickets } from "./js/db.js";
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import firebaseConfig from "./js/config.js";
+    import { createTicket, getMyTickets } from "./js/db.js";
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        currentUserEmail = user.email;
-        
-        // משיכת הקריאות והצגתן
-        getMyTickets(user.email, (tickets) => {
+    // 1. קודם כל מאתחלים את האפליקציה ואת ה-Auth
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    let currentUserEmail = "";
+
+    // 2. רק אחרי האתחול, מפעילים את המאזין למצב המשתמש
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserEmail = user.email;
+            console.log("מחובר כ:", currentUserEmail);
+            
+            // טעינת הקריאות של המשתמש
+            loadTickets(user.email);
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    // פונקציה להצגת הקריאות על המסך
+    function loadTickets(email) {
+        getMyTickets(email, (tickets) => {
             const container = document.getElementById('tickets-container');
-            container.innerHTML = ""; // ניקוי הרשימה לפני טעינה מחדש
+            if (!container) return;
+            
+            container.innerHTML = ""; 
 
             tickets.forEach(ticket => {
-                const statusColor = ticket.status === 'open' ? 'text-green-600' : 'text-gray-500';
+                const date = ticket.createdAt?.toDate().toLocaleString('he-IL') || "בטעינה...";
+                const statusText = ticket.status === 'open' ? 'פתוח' : 'סגור';
+                const statusClass = ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800';
+
                 container.innerHTML += `
-                    <div class="border-r-4 border-blue-500 bg-gray-50 p-4 rounded shadow-sm flex justify-between items-center">
+                    <div class="bg-white border-r-4 border-blue-500 p-4 rounded-lg shadow-sm flex justify-between items-center mb-3">
                         <div>
-                            <h3 class="font-bold">${ticket.title}</h3>
-                            <p class="text-sm text-gray-600">${ticket.description}</p>
-                            <span class="text-xs text-gray-400">${ticket.createdAt?.toDate().toLocaleString()}</span>
+                            <h3 class="font-bold text-lg">${ticket.title}</h3>
+                            <p class="text-gray-600">${ticket.description}</p>
+                            <span class="text-xs text-gray-400 font-mono">${date}</span>
                         </div>
-                        <div class="font-bold ${statusColor}">
-                            ${ticket.status === 'open' ? 'פתוח' : 'סגור'}
-                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">
+                            ${statusText}
+                        </span>
                     </div>
                 `;
             });
         });
     }
-});
-    const auth = getAuth();
-    let currentUserEmail = "";
 
-    // מוודא שהמשתמש מחובר ושומר את המייל שלו
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUserEmail = user.email;
-        }
-    });
+    // מאזין לכפתור שליחת קריאה
+    const submitBtn = document.getElementById('submit-ticket');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+            const title = document.getElementById('ticket-title').value;
+            const desc = document.getElementById('ticket-desc').value;
 
-    // האזנה ללחיצה על כפתור "שלח קריאה"
-    document.getElementById('submit-ticket').addEventListener('click', async () => {
-        const title = document.getElementById('ticket-title').value;
-        const desc = document.getElementById('ticket-desc').value;
+            if (!title || !desc) {
+                alert("נא למלא את כל השדות");
+                return;
+            }
 
-        if (!title || !desc) {
-            alert("נא למלא נושא ותיאור");
-            return;
-        }
-
-        const result = await createTicket(title, desc, currentUserEmail);
-        
-        if (result.success) {
-            alert("הקריאה נפתחה בהצלחה!");
-            document.getElementById('ticket-title').value = "";
-            document.getElementById('ticket-desc').value = "";
-        } else {
-            alert("שגיאה בפתיחת הקריאה");
-        }
-    });
+            const result = await createTicket(title, desc, currentUserEmail);
+            if (result.success) {
+                document.getElementById('ticket-title').value = "";
+                document.getElementById('ticket-desc').value = "";
+                alert("קריאה נפתחה בהצלחה!");
+            }
+        });
+    }
 </script>
-
-</body>
-</html>
