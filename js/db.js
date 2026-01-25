@@ -37,3 +37,33 @@ export function getMyTickets(email, callback) {
         callback(tickets);
     });
 }
+
+import { updateDoc, doc, query, collection, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// פונקציה למשיכת כל הקריאות במערכת (עבור הטכנאי)
+export function getAllTickets(callback) {
+    const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
+    
+    return onSnapshot(q, (querySnapshot) => {
+        const tickets = [];
+        querySnapshot.forEach((doc) => {
+            tickets.push({ id: doc.id, ...doc.data() });
+        });
+        callback(tickets);
+    });
+}
+
+// פונקציה לסגירת קריאה ועדכון זמן סגירה
+export async function closeTicket(ticketId) {
+    try {
+        const ticketRef = doc(db, "tickets", ticketId);
+        await updateDoc(ticketRef, {
+            status: "closed",
+            closedAt: serverTimestamp()
+        });
+        return { success: true };
+    } catch (e) {
+        console.error("שגיאה בסגירת הקריאה:", e);
+        return { success: false };
+    }
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ניהול קריאות IT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">ניהול תקלות IT</h1>
+            <a href="dashboard.html" class="text-blue-600 hover:underline">חזרה לדף משתמש</a>
+        </header>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="w-full text-right">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-4">משתמש</th>
+                        <th class="p-4">נושא</th>
+                        <th class="p-4">זמן פתיחה</th>
+                        <th class="p-4">SLA (זמן טיפול)</th>
+                        <th class="p-4">סטטוס</th>
+                        <th class="p-4">פעולות</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-tickets-table">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getAllTickets, closeTicket } from "./js/db.js";
+
+        getAllTickets((tickets) => {
+            const tableBody = document.getElementById('admin-tickets-table');
+            tableBody.innerHTML = "";
+
+            tickets.forEach(ticket => {
+                const created = ticket.createdAt?.toDate();
+                const closed = ticket.closedAt?.toDate();
+                
+                // חישוב SLA
+                let slaText = "בטיפול...";
+                if (closed && created) {
+                    const diffMs = closed - created;
+                    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    slaText = `${diffHrs} שעות, ${diffMins} דקות`;
+                }
+
+                const row = `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4">${ticket.userEmail}</td>
+                        <td class="p-4 font-bold">${ticket.title}</td>
+                        <td class="p-4 text-sm">${created ? created.toLocaleString('he-IL') : '---'}</td>
+                        <td class="p-4 text-sm text-blue-600 font-mono">${slaText}</td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 rounded text-xs ${ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}">
+                                ${ticket.status === 'open' ? 'פתוח' : 'סגור'}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            ${ticket.status === 'open' ? 
+                                `<button onclick="handleClose('${ticket.id}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">סגור קריאה</button>` 
+                                : '---'}
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        });
+
+        // פונקציית עזר לסגירה (חייבת להיות גלובלית כי היא בתוך HTML string)
+        window.handleClose = async (id) => {
+            if(confirm("לסגור את הקריאה?")) {
+                await closeTicket(id);
+                // כאן נשלב בהמשך את שליחת המייל
+            }
+        };
+    </script>
+</body>
+</html>
