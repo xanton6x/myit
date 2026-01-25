@@ -44,23 +44,42 @@ getAllTickets((tickets) => {
     const tableBody = document.getElementById('admin-tickets-table');
     tableBody.innerHTML = "";
 
-    let openCount = 0;
-    let closedCount = 0;
-    let totalSlaMs = 0;
-
     tickets.forEach(ticket => {
         const created = ticket.createdAt?.toDate();
         const closed = ticket.closedAt?.toDate();
-
-        if (ticket.status === 'open') openCount++;
-        else {
-            closedCount++;
-            if (closed && created) totalSlaMs += (closed - created);
+        
+        // חישוב SLA ידידותי
+        let slaDisplay = "---";
+        if (closed && created) {
+            const diffMs = closed - created;
+            const minutes = Math.floor(diffMs / 60000);
+            const hours = Math.floor(minutes / 60);
+            slaDisplay = hours > 0 ? `${hours} שעות ו-${minutes % 60} דקות` : `${minutes} דקות`;
+        } else if (ticket.status === 'open' && created) {
+            slaDisplay = "בטיפול...";
         }
 
-        // ... הקוד של יצירת שורות הטבלה (Row) שכתבנו קודם ...
-        // (שים לב להשאיר אותו כאן)
+        const row = `
+            <tr class="border-b hover:bg-blue-50 transition-colors">
+                <td class="p-4">${ticket.userEmail}</td>
+                <td class="p-4 font-semibold">${ticket.title}</td>
+                <td class="p-4 text-xs text-gray-500">${created ? created.toLocaleString('he-IL') : 'בטעינה...'}</td>
+                <td class="p-4"><span class="text-blue-600 font-mono text-sm">${slaDisplay}</span></td>
+                <td class="p-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold ${ticket.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+                        ${ticket.status === 'open' ? 'ממתין' : 'בוצע'}
+                    </span>
+                </td>
+                <td class="p-4 text-left">
+                    ${ticket.status === 'open' ? 
+                        `<button onclick="handleClose('${ticket.id}')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 shadow-sm">סגור טיפול</button>` 
+                        : '<span class="text-gray-400">נפתר</span>'}
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
     });
+});
 
     // עדכון כרטיסי הסטטיסטיקה
     document.getElementById('stat-open').innerText = openCount;
