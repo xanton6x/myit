@@ -7,6 +7,7 @@ console.log("קובץ auth.js נטען בהצלחה"); // אם זה לא מופ�
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+<<<<<<< HEAD
 const loginBtn = document.getElementById('login-btn');
 
 if (loginBtn) {
@@ -14,16 +15,32 @@ if (loginBtn) {
         e.preventDefault(); // מונע מהדף להתרענן
         console.log("לחיצה זוהתה!"); 
 
+=======
+// לוגיקה לכפתור ההתחברות (אם אנחנו בדף ה-Login)
+if (loginBtn) {
+    console.log("כפתור ההתחברות זוהה בהצלחה"); // בדיקה שהקוד רץ
+    loginBtn.addEventListener('click', () => {
+>>>>>>> 8037dd24a6dba4b8b5cdab01c993a668517c0a3a
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        console.log("מנסה להתחבר עם:", email);
 
         signInWithEmailAndPassword(auth, email, password)
+<<<<<<< HEAD
             .then(() => {
                 alert("הצלחת להתחבר!");
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
                 console.error("שגיאה:", error.message);
+=======
+            .then((userCredential) => {
+                console.log("הצלחה!");
+                window.location.href = "dashboard.html";
+            })
+            .catch((error) => {
+                console.error("קוד שגיאה:", error.code);
+>>>>>>> 8037dd24a6dba4b8b5cdab01c993a668517c0a3a
                 alert("שגיאה: " + error.message);
             });
     });
