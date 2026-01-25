@@ -9,7 +9,6 @@ console.log("קובץ auth.js נטען בהצלחה"); // אם זה לא מופ�
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-<<<<<<< HEAD
 const loginBtn = document.getElementById('login-btn');
 
 if (loginBtn) {
