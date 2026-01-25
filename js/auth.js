@@ -16,7 +16,7 @@ if (loginBtn) {
         e.preventDefault(); // מונע מהדף להתרענן
         console.log("לחיצה זוהתה!"); 
 
-=======
+
 // לוגיקה לכפתור ההתחברות (אם אנחנו בדף ה-Login)
 if (loginBtn) {
     console.log("כפתור ההתחברות זוהה בהצלחה"); // בדיקה שהקוד רץ
@@ -27,14 +27,14 @@ if (loginBtn) {
         console.log("מנסה להתחבר עם:", email);
 
         signInWithEmailAndPassword(auth, email, password)
-<<<<<<< HEAD
+
             .then(() => {
                 alert("הצלחת להתחבר!");
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
                 console.error("שגיאה:", error.message);
-=======
+
             .then((userCredential) => {
                 console.log("הצלחה!");
                 window.location.href = "dashboard.html";
