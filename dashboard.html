@@ -35,5 +35,70 @@
         document.getElementById('logout-btn').addEventListener('click', logout);
     </script>
     <script type="module" src="js/db.js"></script>
+<script type="module">
+    import { createTicket } from "./js/db.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import { getMyTickets } from "./js/db.js";
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUserEmail = user.email;
+        
+        // משיכת הקריאות והצגתן
+        getMyTickets(user.email, (tickets) => {
+            const container = document.getElementById('tickets-container');
+            container.innerHTML = ""; // ניקוי הרשימה לפני טעינה מחדש
+
+            tickets.forEach(ticket => {
+                const statusColor = ticket.status === 'open' ? 'text-green-600' : 'text-gray-500';
+                container.innerHTML += `
+                    <div class="border-r-4 border-blue-500 bg-gray-50 p-4 rounded shadow-sm flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">${ticket.title}</h3>
+                            <p class="text-sm text-gray-600">${ticket.description}</p>
+                            <span class="text-xs text-gray-400">${ticket.createdAt?.toDate().toLocaleString()}</span>
+                        </div>
+                        <div class="font-bold ${statusColor}">
+                            ${ticket.status === 'open' ? 'פתוח' : 'סגור'}
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+});
+    const auth = getAuth();
+    let currentUserEmail = "";
+
+    // מוודא שהמשתמש מחובר ושומר את המייל שלו
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserEmail = user.email;
+        }
+    });
+
+    // האזנה ללחיצה על כפתור "שלח קריאה"
+    document.getElementById('submit-ticket').addEventListener('click', async () => {
+        const title = document.getElementById('ticket-title').value;
+        const desc = document.getElementById('ticket-desc').value;
+
+        if (!title || !desc) {
+            alert("נא למלא נושא ותיאור");
+            return;
+        }
+
+        const result = await createTicket(title, desc, currentUserEmail);
+        
+        if (result.success) {
+            alert("הקריאה נפתחה בהצלחה!");
+            document.getElementById('ticket-title').value = "";
+            document.getElementById('ticket-desc').value = "";
+        } else {
+            alert("שגיאה בפתיחת הקריאה");
+        }
+    });
+</script>
+
 </body>
 </html>
