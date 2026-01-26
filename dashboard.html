@@ -2,118 +2,52 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Support - דשבורד משתמש</title>
+    <title>IT Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="font-bold text-xl">מרכז התמיכה שלי</h1>
-        <button id="logout-btn" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition">התנתק</button>
+<body class="bg-slate-50">
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <span class="font-bold text-slate-700 text-lg">מרכז התמיכה שלי</span>
+            <div class="flex gap-4 items-center">
+                <a id="admin-btn" href="admin.html" class="hidden bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-all shadow-sm">
+                    ניהול מערכת IT
+                </a>
+                <button id="logout-btn" class="text-slate-400 hover:text-red-600 text-sm font-medium transition-colors">התנתק</button>
+            </div>
+        </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto mt-10 p-6">
-        <div class="bg-white p-6 rounded-lg shadow mb-8">
-            <h2 class="text-xl font-bold mb-4">פתיחת קריאה חדשה</h2>
-            <div class="space-y-4">
-                <input id="ticket-title" type="text" placeholder="נושא התקלה (למשל: המדפסת לא עובדת)" class="w-full p-3 border rounded focus:ring-2 focus:ring-blue-500">
-                <textarea id="ticket-desc" placeholder="תיאור קצר של הבעיה..." class="w-full p-3 border rounded h-24 focus:ring-2 focus:ring-blue-500"></textarea>
-                <button id="submit-ticket" class="bg-green-600 text-white px-6 py-2 rounded font-bold hover:bg-green-700 transition">שלח קריאת IT</button>
+    <div class="max-w-4xl mx-auto p-6">
+        <div id="user-tickets-container">
             </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">הקריאות שלי</h2>
-            <div id="tickets-container" class="space-y-3">
-                <p class="text-gray-500">טוען קריאות...</p>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script type="module">
-        // 1. ייבוא ספריות
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import firebaseConfig from "./js/config.js";
-        import { createTicket, getMyTickets } from "./js/db.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { logoutUser, getMyTickets } from "./js/db.js";
 
-        // 2. אתחול
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        let currentUserEmail = "";
+        const auth = getAuth();
+        const ADMIN_EMAIL = "toha400@gmail.com";
 
-        // 3. מאזין למצב משתמש
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                currentUserEmail = user.email;
-                console.log("מחובר בהצלחה:", currentUserEmail);
-                loadTickets(user.email);
+                // בדיקת הרשאת מנהל להצגת הכפתור
+                if (user.email === ADMIN_EMAIL) {
+                    document.getElementById('admin-btn').classList.remove('hidden');
+                }
+                
+                // טעינת קריאות המשתמש
+                getMyTickets(user.email, (tickets) => {
+                    // הלוגיקה הקיימת שלך להצגת קריאות המשתמש
+                    console.log("My tickets:", tickets);
+                });
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        // 4. פונקציית טעינת קריאות
-        function loadTickets(email) {
-            const container = document.getElementById('tickets-container');
-            if (!container) return;
-
-            getMyTickets(email, (tickets) => {
-                container.innerHTML = ""; 
-                if (tickets.length === 0) {
-                    container.innerHTML = "<p class='text-gray-400'>אין לך קריאות פתוחות.</p>";
-                    return;
-                }
-
-                tickets.forEach(ticket => {
-                    const date = ticket.createdAt?.toDate ? ticket.createdAt.toDate().toLocaleString('he-IL') : "בטיפול...";
-                    const statusText = ticket.status === 'open' ? 'פתוח' : 'סגור';
-                    const statusClass = ticket.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800';
-
-                    container.innerHTML += `
-                        <div class="bg-white border-r-4 border-blue-500 p-4 rounded-lg shadow-sm flex justify-between items-center mb-3">
-                            <div>
-                                <h3 class="font-bold text-lg">${ticket.title}</h3>
-                                <p class="text-gray-600">${ticket.description}</p>
-                                <span class="text-xs text-gray-400">${date}</span>
-                            </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">
-                                ${statusText}
-                            </span>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // 5. מאזין לכפתור התנתקות
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                signOut(auth).then(() => window.location.href = "index.html");
-            });
-        }
-
-        // 6. מאזין לכפתור שליחת קריאה
-        const submitBtn = document.getElementById('submit-ticket');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', async () => {
-                const title = document.getElementById('ticket-title').value;
-                const desc = document.getElementById('ticket-desc').value;
-
-                if (!title || !desc) {
-                    alert("נא למלא נושא ותיאור");
-                    return;
-                }
-
-                const result = await createTicket(title, desc, currentUserEmail);
-                if (result.success) {
-                    document.getElementById('ticket-title').value = "";
-                    document.getElementById('ticket-desc').value = "";
-                    alert("הקריאה נשלחה!");
-                }
-            });
-        }
+        document.getElementById('logout-btn').onclick = logoutUser;
     </script>
 </body>
 </html>
