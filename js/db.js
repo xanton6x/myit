@@ -10,13 +10,25 @@ import {
     where, 
     onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import firebaseConfig from "./config.js";
 
-// אתחול
+// אתחול Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// פתיחת קריאה
+// פונקציית התנתקות
+export async function logoutUser() {
+    const auth = getAuth();
+    try {
+        await signOut(auth);
+        window.location.href = "index.html";
+    } catch (error) {
+        console.error("Error signing out:", error);
+    }
+}
+
+// יצירת קריאה
 export async function createTicket(title, description, userEmail) {
     try {
         const docRef = await addDoc(collection(db, "tickets"), {
@@ -29,12 +41,12 @@ export async function createTicket(title, description, userEmail) {
         });
         return { success: true, id: docRef.id };
     } catch (e) {
-        console.error("Error:", e);
+        console.error("Error adding ticket: ", e);
         return { success: false };
     }
 }
 
-// משיכת קריאות משתמש (Dashboard)
+// משיכת קריאות למשתמש (Dashboard)
 export function getMyTickets(email, callback) {
     const q = query(collection(db, "tickets"), where("userEmail", "==", email));
     return onSnapshot(q, (snapshot) => {
@@ -43,14 +55,14 @@ export function getMyTickets(email, callback) {
     });
 }
 
-// משיכת כל הקריאות (Admin בלבד)
+// משיכת כל הקריאות (Admin)
 export function getAllTickets(callback) {
-    const q = query(collection(db, "tickets")); // ללא מיון כרגע למניעת שגיאות אינדקס
+    const q = query(collection(db, "tickets"));
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(tickets);
     }, (error) => {
-        console.error("Firebase Admin Error:", error);
+        console.error("Admin Fetch Error:", error);
     });
 }
 
