@@ -8,16 +8,15 @@ import {
     serverTimestamp, 
     query, 
     where, 
-    onSnapshot, 
-    orderBy 
+    onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import firebaseConfig from "./config.js";
 
-// אתחול
+// אתחול Firebase ו-Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 1. פונקציה לפתיחת קריאה
+// פתיחת קריאה חדשה
 export async function createTicket(title, description, userEmail) {
     try {
         const docRef = await addDoc(collection(db, "tickets"), {
@@ -30,34 +29,31 @@ export async function createTicket(title, description, userEmail) {
         });
         return { success: true, id: docRef.id };
     } catch (e) {
-        console.error("Error:", e);
+        console.error("Error adding ticket: ", e);
         return { success: false };
     }
 }
 
-// 2. משיכת קריאות למשתמש ספציפי
+// משיכת קריאות למשתמש ספציפי (Dashboard)
 export function getMyTickets(email, callback) {
-    const q = query(
-        collection(db, "tickets"), 
-        where("userEmail", "==", email), 
-        orderBy("createdAt", "desc")
-    );
+    // השארנו רק where כדי שיעבוד ללא אינדקס כרגע
+    const q = query(collection(db, "tickets"), where("userEmail", "==", email));
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(tickets);
     });
 }
 
-// 3. משיכת כל הקריאות (עבור ה-Admin)
+// משיכת כל הקריאות (Admin)
 export function getAllTickets(callback) {
-    const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
+    const q = query(collection(db, "tickets"));
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(tickets);
     });
 }
 
-// 4. סגירת קריאה
+// סגירת קריאה
 export async function closeTicket(ticketId) {
     try {
         const ticketRef = doc(db, "tickets", ticketId);
@@ -67,6 +63,7 @@ export async function closeTicket(ticketId) {
         });
         return { success: true };
     } catch (e) {
+        console.error("Error closing ticket: ", e);
         return { success: false };
     }
 }
