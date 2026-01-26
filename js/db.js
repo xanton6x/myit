@@ -12,11 +12,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import firebaseConfig from "./config.js";
 
-// אתחול Firebase ו-Firestore
+// אתחול
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// פתיחת קריאה חדשה
+// פתיחת קריאה
 export async function createTicket(title, description, userEmail) {
     try {
         const docRef = await addDoc(collection(db, "tickets"), {
@@ -29,14 +29,13 @@ export async function createTicket(title, description, userEmail) {
         });
         return { success: true, id: docRef.id };
     } catch (e) {
-        console.error("Error adding ticket: ", e);
+        console.error("Error:", e);
         return { success: false };
     }
 }
 
-// משיכת קריאות למשתמש ספציפי (Dashboard)
+// משיכת קריאות משתמש (Dashboard)
 export function getMyTickets(email, callback) {
-    // השארנו רק where כדי שיעבוד ללא אינדקס כרגע
     const q = query(collection(db, "tickets"), where("userEmail", "==", email));
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -44,17 +43,14 @@ export function getMyTickets(email, callback) {
     });
 }
 
-// משיכת כל הקריאות (Admin)
+// משיכת כל הקריאות (Admin בלבד)
 export function getAllTickets(callback) {
-    // חשוב: בלי orderBy ובלי where - אנחנו רוצים את הכל
-    const q = query(collection(db, "tickets")); 
-    
+    const q = query(collection(db, "tickets")); // ללא מיון כרגע למניעת שגיאות אינדקס
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log("נמצאו " + tickets.length + " קריאות במערכת"); 
         callback(tickets);
     }, (error) => {
-        console.error("שגיאה במשיכת נתונים ל-Admin:", error);
+        console.error("Firebase Admin Error:", error);
     });
 }
 
@@ -68,7 +64,6 @@ export async function closeTicket(ticketId) {
         });
         return { success: true };
     } catch (e) {
-        console.error("Error closing ticket: ", e);
         return { success: false };
     }
 }
