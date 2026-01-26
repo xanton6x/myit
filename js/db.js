@@ -46,10 +46,15 @@ export function getMyTickets(email, callback) {
 
 // משיכת כל הקריאות (Admin)
 export function getAllTickets(callback) {
-    const q = query(collection(db, "tickets"));
+    // חשוב: בלי orderBy ובלי where - אנחנו רוצים את הכל
+    const q = query(collection(db, "tickets")); 
+    
     return onSnapshot(q, (snapshot) => {
         const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("נמצאו " + tickets.length + " קריאות במערכת"); 
         callback(tickets);
+    }, (error) => {
+        console.error("שגיאה במשיכת נתונים ל-Admin:", error);
     });
 }
 
