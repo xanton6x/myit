@@ -2,108 +2,109 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ניהול קריאות IT</title>
+    <title>ניהול מערכת IT - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
+<body class="bg-slate-50 p-6">
     <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 border-r-4 border-blue-600 pr-4">ניהול תקלות IT</h1>
-            <a href="dashboard.html" class="text-blue-600 hover:text-blue-800 font-semibold">חזרה לדף משתמש</a>
+        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">פאנל ניהול קריאות</h1>
+                <p id="admin-welcome" class="text-sm text-slate-500 font-medium"></p>
+            </div>
+            <a href="dashboard.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition-all">חזרה למשתמש</a>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
-                <h2 class="text-gray-500 text-sm font-bold uppercase tracking-wider">קריאות פתוחות</h2>
-                <p id="stat-open" class="text-4xl font-black mt-2">0</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
+            <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500">
+                <p class="text-slate-400 text-sm font-bold">קריאות פתוחות</p>
+                <p id="stat-open" class="text-4xl font-black text-slate-800">0</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-green-500">
-                <h2 class="text-gray-500 text-sm font-bold uppercase tracking-wider">קריאות שנסגרו</h2>
-                <p id="stat-closed" class="text-4xl font-black mt-2">0</p>
+            <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-emerald-500">
+                <p class="text-slate-400 text-sm font-bold">קריאות שנסגרו</p>
+                <p id="stat-closed" class="text-4xl font-black text-slate-800">0</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-yellow-500">
-                <h2 class="text-gray-500 text-sm font-bold uppercase tracking-wider">זמן טיפול (דקות)</h2>
-                <p id="stat-sla" class="text-4xl font-black mt-2">0</p>
+            <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-amber-500">
+                <p class="text-slate-400 text-sm font-bold">זמן טיפול (דק')</p>
+                <p id="stat-sla" class="text-4xl font-black text-slate-800">0</p>
             </div>
         </div>
 
-        <div class="bg-white shadow-lg rounded-xl overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 border-b">
-                            <th class="p-4 text-gray-600 font-bold">משתמש</th>
-                            <th class="p-4 text-gray-600 font-bold">נושא התקלה</th>
-                            <th class="p-4 text-gray-600 font-bold">זמן פתיחה</th>
-                            <th class="p-4 text-gray-600 font-bold text-center">סטטוס</th>
-                            <th class="p-4 text-gray-600 font-bold text-center">פעולות</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-tickets-table">
-                        </tbody>
-                </table>
-            </div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <table class="w-full text-right">
+                <thead class="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="p-4 text-slate-600 font-bold">משתמש</th>
+                        <th class="p-4 text-slate-600 font-bold">נושא</th>
+                        <th class="p-4 text-slate-600 font-bold text-center">סטטוס</th>
+                        <th class="p-4 text-slate-600 font-bold text-center">פעולה</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-tickets-table" class="divide-y divide-slate-50">
+                    </tbody>
+            </table>
         </div>
     </div>
 
     <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getAllTickets, closeTicket } from "./js/db.js";
 
-        // פונקציית טעינת הנתונים
-        getAllTickets((tickets) => {
-            const tableBody = document.getElementById('admin-tickets-table');
-            tableBody.innerHTML = "";
+        const auth = getAuth();
+        const ADMIN_EMAIL = "toha400@gmail.com"; // המייל המורשה שלך
 
-            let openCount = 0;
-            let closedCount = 0;
-            let totalSlaMinutes = 0;
-
-            tickets.forEach(ticket => {
-                const created = ticket.createdAt?.toDate();
-                const closed = ticket.closedAt?.toDate();
-
-                if (ticket.status === 'open') {
-                    openCount++;
-                } else {
-                    closedCount++;
-                    if (closed && created) {
-                        totalSlaMinutes += (closed - created) / 60000;
-                    }
-                }
-
-                const row = `
-                    <tr class="border-b hover:bg-gray-50 transition-colors">
-                        <td class="p-4 text-sm text-gray-700">${ticket.userEmail}</td>
-                        <td class="p-4 font-bold text-gray-800">${ticket.title}</td>
-                        <td class="p-4 text-xs text-gray-500">${created ? created.toLocaleString('he-IL') : 'בטעינה...'}</td>
-                        <td class="p-4 text-center">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold ${ticket.status === 'open' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'}">
-                                ${ticket.status === 'open' ? 'ממתין' : 'סגור'}
-                            </span>
-                        </td>
-                        <td class="p-4 text-center">
-                            ${ticket.status === 'open' ? 
-                                `<button onclick="handleClose('${ticket.id}')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 transition-all shadow-md">סגור קריאה</button>` 
-                                : '<span class="text-green-600 font-bold italic">בוצע</span>'}
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-
-            // עדכון כרטיסי הסטטיסטיקה
-            document.getElementById('stat-open').innerText = openCount;
-            document.getElementById('stat-closed').innerText = closedCount;
-            document.getElementById('stat-sla').innerText = closedCount > 0 ? Math.floor(totalSlaMinutes / closedCount) : 0;
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('admin-welcome').innerText = `מחובר כ: ${user.email}`;
+                loadData();
+            } else {
+                alert("גישה לצוות IT בלבד!");
+                window.location.href = "dashboard.html";
+            }
         });
 
-        // הגדרת הפונקציה כגלובלית לכפתור ה-HTML
+        function loadData() {
+            getAllTickets((tickets) => {
+                const tbody = document.getElementById('admin-tickets-table');
+                const sOpen = document.getElementById('stat-open');
+                const sClosed = document.getElementById('stat-closed');
+                const sSla = document.getElementById('stat-sla');
+
+                tbody.innerHTML = "";
+                let o = 0, c = 0, slaTotal = 0;
+
+                tickets.forEach(t => {
+                    if(t.status === 'open') o++;
+                    else {
+                        c++;
+                        if(t.closedAt && t.createdAt) {
+                            slaTotal += (t.closedAt.toDate() - t.createdAt.toDate()) / 60000;
+                        }
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-4 text-slate-600 text-sm">${t.userEmail}</td>
+                            <td class="p-4 font-bold text-slate-800">${t.title}</td>
+                            <td class="p-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${t.status === 'open' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}">
+                                    ${t.status === 'open' ? 'בטיפול' : 'סגור'}
+                                </span>
+                            </td>
+                            <td class="p-4 text-center">
+                                ${t.status === 'open' ? `<button onclick="handleClose('${t.id}')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:shadow-lg transition-all">סגור קריאה</button>` : '<span class="text-emerald-600 font-bold">בוצע</span>'}
+                            </td>
+                        </tr>`;
+                });
+
+                sOpen.innerText = o;
+                sClosed.innerText = c;
+                sSla.innerText = c > 0 ? Math.floor(slaTotal/c) : 0;
+            });
+        }
+
         window.handleClose = async (id) => {
-            if(confirm("האם אתה בטוח שברצונך לסגור את הקריאה ולסיים את הטיפול?")) {
-                const result = await closeTicket(id);
-                if (!result.success) alert("שגיאה בסגירת הקריאה");
-            }
+            if(confirm("לסגור קריאה זו?")) await closeTicket(id);
         };
     </script>
 </body>
