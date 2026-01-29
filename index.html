@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mobile ICQ</title>
+    <title>ICQ Mobile Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="contact-screen" class="screen">
     <div class="icq-header">
-        <span class="flower">🌻</span> ICQ Mobile
-        <div class="header-status">Online</div>
+        <span id="my-main-flower" class="flower online-flower">🌻</span> 
+        <span class="header-title">ICQ Mobile</span>
     </div>
     
     <div class="contact-list">
@@ -29,6 +29,23 @@
                 <div class="preview">Ушла в школу...</div>
             </div>
         </div>
+        <div class="contact" onclick="openChat('Old_Schooler', 'away')">
+            <div class="status-icon away"></div>
+            <div class="contact-info">
+                <div class="name">Old_Schooler</div>
+                <div class="preview">Пишу на Delphi...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-selector-area">
+        <span>Статус:</span>
+        <select id="status-select" onchange="changeMyStatus()">
+            <option value="online">Online</option>
+            <option value="away">Away</option>
+            <option value="dnd">DND</option>
+            <option value="invisible">Invisible</option>
+        </select>
     </div>
 </div>
 
@@ -39,8 +56,8 @@
     </div>
     <div id="chat-history" class="chat-history"></div>
     <div class="input-area">
-        <input type="text" id="chat-input" placeholder="Сообщение...">
-        <button onclick="sendMessage()">Send</button>
+        <input type="text" id="chat-input" placeholder="Сообщение..." autocomplete="off">
+        <button class="win-btn" onclick="sendMessage()">Send</button>
     </div>
 </div>
 
