@@ -1,63 +1,70 @@
-х<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ICQ Mobile Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ICQ Next Gen</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="contact-screen" class="screen">
-    <div class="icq-header">
-        <span id="my-main-flower" class="flower online-flower">🌻</span> 
-        <span class="header-title">ICQ Mobile</span>
-    </div>
-    
-    <div class="contact-list">
-        <div class="contact" onclick="openChat('Dimon_2003', 'online')">
-            <div class="status-icon online"></div>
-            <div class="contact-info">
-                <div class="name">Dimon_2003</div>
-                <div class="preview">Превед! Как дела?</div>
+<div class="app-container">
+    <div id="contact-screen" class="screen active">
+        <div class="glass-header">
+            <div class="user-profile">
+                <div id="my-flower" class="main-flower online">🌻</div>
+                <div class="user-info">
+                    <span class="user-id">UIN: 123-456</span>
+                    <select id="status-select" onchange="updateStatus()">
+                        <option value="online">В сети</option>
+                        <option value="away">Отошел</option>
+                        <option value="dnd">Не беспокоить</option>
+                    </select>
+                </div>
             </div>
         </div>
-        <div class="contact" onclick="openChat('Elena_Candy', 'offline')">
-            <div class="status-icon offline"></div>
-            <div class="contact-info">
-                <div class="name">Elena_Candy</div>
-                <div class="preview">Ушла в школу...</div>
-            </div>
+        
+        <div class="search-bar">
+            <input type="text" placeholder="Поиск контактов...">
         </div>
-        <div class="contact" onclick="openChat('Old_Schooler', 'away')">
-            <div class="status-icon away"></div>
-            <div class="contact-info">
-                <div class="name">Old_Schooler</div>
-                <div class="preview">Пишу на Delphi...</div>
+
+        <div class="contact-list">
+            <div class="contact-card" onclick="openChat('Dimon_2003', 'online')">
+                <div class="avatar online">D</div>
+                <div class="card-text">
+                    <div class="card-header"><b>Dimon_2003</b> <span class="time">12:45</span></div>
+                    <div class="preview">Превед! Как делы? =)</div>
+                </div>
+            </div>
+            <div class="contact-card" onclick="openChat('Elena_Candy', 'away')">
+                <div class="avatar away">E</div>
+                <div class="card-text">
+                    <div class="card-header"><b>Elena_Candy</b> <span class="time">Вчера</span></div>
+                    <div class="preview">Ушла в школу, буду поздно...</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="status-selector-area">
-        <span>Статус:</span>
-        <select id="status-select" onchange="changeMyStatus()">
-            <option value="online">Online</option>
-            <option value="away">Away</option>
-            <option value="dnd">DND</option>
-            <option value="invisible">Invisible</option>
-        </select>
-    </div>
-</div>
+    <div id="chat-screen" class="screen">
+        <div class="glass-header">
+            <button class="icon-btn" onclick="closeChat()">◀</button>
+            <div class="chat-target">
+                <b id="chat-user-name">Dimon_2003</b>
+                <span id="chat-status" class="status-text">в сети</span>
+            </div>
+            <button class="icon-btn">⋮</button>
+        </div>
+        
+        <div id="chat-history" class="chat-messages">
+            <div class="system-msg">Безопасное соединение установлено</div>
+        </div>
 
-<div id="chat-screen" class="screen" style="display:none;">
-    <div class="icq-header">
-        <button class="back-btn" onclick="closeChat()">◀</button>
-        <span id="chat-user-name">Чат</span>
-    </div>
-    <div id="chat-history" class="chat-history"></div>
-    <div class="input-area">
-        <input type="text" id="chat-input" placeholder="Сообщение..." autocomplete="off">
-        <button class="win-btn" onclick="sendMessage()">Send</button>
+        <div class="input-container">
+            <button class="attach-btn">+</button>
+            <input type="text" id="chat-input" placeholder="Сообщение..." autocomplete="off">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
     </div>
 </div>
 
