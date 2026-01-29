@@ -1,88 +1,41 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כניסה למערכת IT</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ICQ Web Clone</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
-        <div class="text-center mb-8">
-            <h1 id="form-title" class="text-3xl font-black text-slate-800">כניסה למערכת</h1>
-            <p id="form-subtitle" class="text-slate-500 mt-2">אנא הזן פרטים כדי להמשיך</p>
-        </div>
-
-        <form id="auth-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-bold text-slate-700 mb-1">אימייל</label>
-                <input type="email" id="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-            </div>
-            <div>
-                <label class="block text-sm font-bold text-slate-700 mb-1">סיסמה</label>
-                <input type="password" id="password" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-            </div>
-            
-            <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:-translate-y-0.5">
-                התחברות
-            </button>
-        </form>
-
-        <div class="mt-6 text-center">
-            <button id="toggle-auth" class="text-indigo-600 hover:underline text-sm font-medium">
-                אין לך חשבון? הירשם עכשיו
-            </button>
-        </div>
-        
-        <div id="error-msg" class="mt-4 text-red-500 text-sm text-center hidden"></div>
+<div class="icq-window">
+    <div class="icq-title">
+        <span class="icq-logo">🌻</span> ICQ - 123456789
+        <div class="window-controls"> _ □ X </div>
+    </div>
+    
+    <div class="icq-menu">
+        <span>Main</span> <span>Interests</span> <span>View</span>
     </div>
 
-    <script type="module">
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import firebaseConfig from "./js/config.js";
+    <div class="contact-list">
+        <div class="contact online">
+            <span class="flower-icon"></span> <b>Dimon_2003</b>
+            <div class="status-msg">в сети</div>
+        </div>
+        <div class="contact offline">
+            <span class="flower-icon"></span> <b>Elena_Candy</b>
+            <div class="status-msg">ушла в школу</div>
+        </div>
+    </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    <div class="icq-footer">
+        <div class="my-status">
+            <span class="flower-icon online"></span> Online
+        </div>
+        <button id="btn-msg">System</button>
+    </div>
+</div>
 
-        const authForm = document.getElementById('auth-form');
-        const toggleBtn = document.getElementById('toggle-auth');
-        const formTitle = document.getElementById('form-title');
-        const formSubtitle = document.getElementById('form-subtitle');
-        const submitBtn = document.getElementById('submit-btn');
-        const errorMsg = document.getElementById('error-msg');
-
-        let isLogin = true;
-
-        // החלפה בין מצב כניסה להרשמה
-        toggleBtn.onclick = () => {
-            isLogin = !isLogin;
-            formTitle.innerText = isLogin ? "כניסה למערכת" : "הרשמה למערכת";
-            formSubtitle.innerText = isLogin ? "אנא הזן פרטים כדי להמשיך" : "צור חשבון חדש בתוך שניות";
-            submitBtn.innerText = isLogin ? "התחברות" : "צור חשבון";
-            toggleBtn.innerText = isLogin ? "אין לך חשבון? הירשם עכשיו" : "כבר רשום? התחבר כאן";
-            errorMsg.classList.add('hidden');
-        };
-
-        authForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            errorMsg.classList.add('hidden');
-
-            try {
-                if (isLogin) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-                window.location.href = "dashboard.html";
-            } catch (error) {
-                errorMsg.innerText = "שגיאה: " + error.message;
-                errorMsg.classList.remove('hidden');
-            }
-        };
-    </script>
+<script src="script.js"></script>
 </body>
 </html>
