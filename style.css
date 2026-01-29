@@ -2,55 +2,84 @@
 body, html { 
     margin: 0; padding: 0; height: 100%; 
     font-family: 'Tahoma', sans-serif; background: #556b2f; 
+    overflow: hidden;
 }
 
 .screen {
     display: flex; flex-direction: column;
     height: 100vh; width: 100vw;
     background: #d4d0c8;
+    position: fixed; top: 0; left: 0;
 }
 
+/* Шапка в стиле Win XP */
 .icq-header {
     background: linear-gradient(90deg, #000080, #1084d0);
-    color: white; padding: 12px;
-    display: flex; align-items: center; font-weight: bold;
+    color: white; padding: 15px;
+    display: flex; align-items: center; 
+    box-shadow: inset 1px 1px #fff;
 }
 
-.back-btn { background: none; border: none; color: white; font-size: 18px; margin-right: 10px; }
+.header-title { font-weight: bold; margin-left: 10px; font-size: 18px; }
 
-.contact-list { flex-grow: 1; overflow-y: auto; background: white; margin: 5px; border: 2px inset #fff; }
+/* Статусы цветка */
+.flower { font-size: 20px; transition: 0.3s; }
+.online-flower { filter: none; }
+.away-flower { filter: hue-rotate(140deg); }
+.dnd-flower { filter: grayscale(1) contrast(2); color: red; }
+.invisible-flower { opacity: 0.5; }
+
+.contact-list { 
+    flex-grow: 1; overflow-y: auto; background: white; 
+    margin: 5px; border: 2px inset #fff; 
+}
 
 .contact {
     display: flex; align-items: center; padding: 15px;
-    border-bottom: 1px solid #eee; cursor: pointer;
+    border-bottom: 1px solid #d4d0c8;
 }
 
-.status-icon { width: 15px; height: 15px; border-radius: 50%; margin-right: 15px; }
+.status-icon { width: 16px; height: 16px; border-radius: 50%; margin-right: 15px; }
 .online { background: #00ff00; border: 1px solid #004400; }
 .offline { background: #ff0000; border: 1px solid #440000; }
+.away { background: #ffff00; border: 1px solid #888800; }
 
-.name { font-weight: bold; font-size: 16px; }
-.preview { font-size: 12px; color: gray; }
+.name { font-weight: bold; font-size: 16px; color: #000; }
+.preview { font-size: 12px; color: #666; }
 
+/* Поле выбора статуса внизу */
+.status-selector-area {
+    padding: 12px; background: #d4d0c8;
+    border-top: 1px solid #808080; display: flex; align-items: center; gap: 10px;
+}
+
+#status-select {
+    flex-grow: 1; padding: 8px; border: 2px inset #fff; font-size: 16px;
+}
+
+/* Чат */
 .chat-history {
     flex-grow: 1; overflow-y: auto; background: white;
-    margin: 5px; border: 2px inset #fff; padding: 10px;
+    margin: 5px; border: 2px inset #fff; padding: 15px;
 }
 
 .input-area {
-    display: flex; padding: 10px; background: #d4d0c8; gap: 5px;
+    display: flex; padding: 10px; background: #d4d0c8; gap: 8px;
+    padding-bottom: 25px; /* Для челок Айфонов */
 }
 
 #chat-input {
-    flex-grow: 1; padding: 10px; border: 2px inset #fff; border-radius: 0;
+    flex-grow: 1; padding: 12px; border: 2px inset #fff; font-size: 16px;
 }
 
-.input-area button {
+.win-btn {
     background: #d4d0c8; border: 2px solid #fff;
     border-right-color: #404040; border-bottom-color: #404040;
-    padding: 10px; font-weight: bold;
+    padding: 10px 15px; font-weight: bold;
 }
 
-.msg { margin-bottom: 10px; font-size: 14px; }
+.back-btn { background: none; border: none; color: white; font-size: 20px; padding: 0 10px; }
+
+.msg { margin-bottom: 12px; line-height: 1.4; }
 .msg-me { color: blue; font-weight: bold; }
-.msg-them { color: red; font-weight: bold; }
+.msg-them { color: #d00; font-weight: bold; }
