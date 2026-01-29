@@ -2,56 +2,45 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICQ Classic Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile ICQ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="icq-window">
-    <div class="icq-title">
-        <div class="title-text">🌻 ICQ - 123456789</div>
-        <div class="window-controls"> _ □ X </div>
+<div id="contact-screen" class="screen">
+    <div class="icq-header">
+        <span class="flower">🌻</span> ICQ Mobile
+        <div class="header-status">Online</div>
     </div>
     
-    <div class="icq-menu">
-        <span>Main</span> <span>Interests</span> <span>View</span>
-    </div>
-
     <div class="contact-list">
-        <div class="contact online" onclick="openChat('Dimon_2003')">
-            <span class="flower-icon"></span> <b>Dimon_2003</b>
-            <div class="status-msg">в сети</div>
+        <div class="contact" onclick="openChat('Dimon_2003', 'online')">
+            <div class="status-icon online"></div>
+            <div class="contact-info">
+                <div class="name">Dimon_2003</div>
+                <div class="preview">Превед! Как дела?</div>
+            </div>
         </div>
-        <div class="contact offline" onclick="openChat('Elena_Candy')">
-            <span class="flower-icon"></span> <b>Elena_Candy</b>
-            <div class="status-msg">ушла в школу</div>
+        <div class="contact" onclick="openChat('Elena_Candy', 'offline')">
+            <div class="status-icon offline"></div>
+            <div class="contact-info">
+                <div class="name">Elena_Candy</div>
+                <div class="preview">Ушла в школу...</div>
+            </div>
         </div>
-        <div class="contact online" onclick="openChat('Old_Skool')">
-            <span class="flower-icon"></span> <b>Old_Skool</b>
-            <div class="status-msg">пишу код...</div>
-        </div>
-    </div>
-
-    <div class="icq-footer">
-        <div class="my-status">
-            <span class="flower-icon online"></span> Online
-        </div>
-        <button class="win-btn">System</button>
     </div>
 </div>
 
-<div id="chat-window" class="chat-window">
-    <div class="icq-title">
-        <span id="chat-user-title">Чат</span>
-        <div class="window-controls" onclick="closeChat()"> X </div>
+<div id="chat-screen" class="screen" style="display:none;">
+    <div class="icq-header">
+        <button class="back-btn" onclick="closeChat()">◀</button>
+        <span id="chat-user-name">Чат</span>
     </div>
-    <div class="chat-history" id="chat-history">
-        <div class="msg"><span class="msg-system">История сообщений сохранена.</span></div>
-    </div>
-    <div class="chat-input-area">
-        <textarea id="chat-input" placeholder="Введите сообщение..."></textarea>
-        <button class="win-btn send-btn" onclick="sendMessage()">Send</button>
+    <div id="chat-history" class="chat-history"></div>
+    <div class="input-area">
+        <input type="text" id="chat-input" placeholder="Сообщение...">
+        <button onclick="sendMessage()">Send</button>
     </div>
 </div>
 
