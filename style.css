@@ -1,45 +1,56 @@
-body { background: #556b2f; font-family: 'Tahoma', sans-serif; font-size: 11px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body, html { 
+    margin: 0; padding: 0; height: 100%; 
+    font-family: 'Tahoma', sans-serif; background: #556b2f; 
+}
 
-.icq-window {
-    width: 250px;
+.screen {
+    display: flex; flex-direction: column;
+    height: 100vh; width: 100vw;
     background: #d4d0c8;
-    border: 2px solid #fff;
-    border-right-color: #404040;
-    border-bottom-color: #404040;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
 }
 
-.icq-title {
+.icq-header {
     background: linear-gradient(90deg, #000080, #1084d0);
-    color: white;
-    padding: 3px;
-    font-weight: bold;
-    display: flex; justify-content: space-between;
+    color: white; padding: 12px;
+    display: flex; align-items: center; font-weight: bold;
 }
 
-.icq-menu { padding: 2px; border-bottom: 1px solid #808080; }
-.icq-menu span { margin-right: 10px; cursor: pointer; }
+.back-btn { background: none; border: none; color: white; font-size: 18px; margin-right: 10px; }
 
-.contact-list {
-    height: 300px;
-    background: white;
-    margin: 5px;
-    border: 2px inset #d4d0c8;
-    overflow-y: auto;
+.contact-list { flex-grow: 1; overflow-y: auto; background: white; margin: 5px; border: 2px inset #fff; }
+
+.contact {
+    display: flex; align-items: center; padding: 15px;
+    border-bottom: 1px solid #eee; cursor: pointer;
 }
 
-.contact { padding: 5px; display: flex; align-items: center; border-bottom: 1px dotted #ccc; cursor: pointer; }
-.contact:hover { background: #000080; color: white; }
+.status-icon { width: 15px; height: 15px; border-radius: 50%; margin-right: 15px; }
+.online { background: #00ff00; border: 1px solid #004400; }
+.offline { background: #ff0000; border: 1px solid #440000; }
 
-.flower-icon {
-    width: 14px; height: 14px;
-    margin-right: 5px;
-    border-radius: 50%;
-    display: inline-block;
+.name { font-weight: bold; font-size: 16px; }
+.preview { font-size: 12px; color: gray; }
+
+.chat-history {
+    flex-grow: 1; overflow-y: auto; background: white;
+    margin: 5px; border: 2px inset #fff; padding: 10px;
 }
 
-/* Эмуляция цветка */
-.online .flower-icon { background: #00ff00; border: 1px solid #004400; }
-.offline .flower-icon { background: #ff0000; border: 1px solid #440000; }
+.input-area {
+    display: flex; padding: 10px; background: #d4d0c8; gap: 5px;
+}
 
-.icq-footer { padding: 5px; display: flex; justify-content: space-between; border-top: 1px solid #808080; }
+#chat-input {
+    flex-grow: 1; padding: 10px; border: 2px inset #fff; border-radius: 0;
+}
+
+.input-area button {
+    background: #d4d0c8; border: 2px solid #fff;
+    border-right-color: #404040; border-bottom-color: #404040;
+    padding: 10px; font-weight: bold;
+}
+
+.msg { margin-bottom: 10px; font-size: 14px; }
+.msg-me { color: blue; font-weight: bold; }
+.msg-them { color: red; font-weight: bold; }
