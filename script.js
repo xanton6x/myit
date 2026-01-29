@@ -1,52 +1,37 @@
-// Ссылка на легендарный звук "О-оу!"
 const audioUhOh = new Audio('https://www.myinstants.com/media/sounds/icq-uh-oh.mp3');
 
-const chatWindow = document.getElementById('chat-window');
+const contactScreen = document.getElementById('contact-screen');
+const chatScreen = document.getElementById('chat-screen');
 const chatHistory = document.getElementById('chat-history');
 const chatInput = document.getElementById('chat-input');
-const chatUserTitle = document.getElementById('chat-user-title');
+const chatUserName = document.getElementById('chat-user-name');
 
-// Функция открытия чата
-function openChat(name) {
-    chatWindow.style.display = 'block';
-    chatUserTitle.innerText = 'Чат с: ' + name;
-    audioUhOh.play().catch(() => console.log("Нажми на страницу, чтобы звук заработал!"));
+function openChat(name, status) {
+    contactScreen.style.display = 'none';
+    chatScreen.style.display = 'flex';
+    chatUserName.innerText = (status === 'online' ? '🌻 ' : '😡 ') + name;
+    audioUhOh.play().catch(() => {});
 }
 
-// Закрыть чат
 function closeChat() {
-    chatWindow.style.display = 'none';
+    chatScreen.style.display = 'none';
+    contactScreen.style.display = 'flex';
 }
 
-// Отправить сообщение
 function sendMessage() {
     const text = chatInput.value.trim();
-    if (text === "") return;
+    if (!text) return;
 
-    // Ваше сообщение
-    const myMsg = `<div class="msg"><span class="msg-name">Вы:</span> <span>${text}</span></div>`;
-    chatHistory.innerHTML += myMsg;
+    chatHistory.innerHTML += `<div class="msg"><span class="msg-me">Вы:</span> ${text}</div>`;
     chatInput.value = "";
-    
-    // Автопрокрутка вниз
     chatHistory.scrollTop = chatHistory.scrollHeight;
 
-    // Имитация ответа через 1.5 секунды
     setTimeout(() => {
-        audioUhOh.play();
-        const responses = ["Превед!", "Как дела? =)", "Аська жива!", "О-оу!", "Я тут, пиши."];
-        const randomRes = responses[Math.floor(Math.random() * responses.length)];
-        
-        const replyMsg = `<div class="msg"><span class="msg-name">Собеседник:</span> <span>${randomRes}</span></div>`;
-        chatHistory.innerHTML += replyMsg;
+        audioUhOh.play().catch(() => {});
+        chatHistory.innerHTML += `<div class="msg"><span class="msg-them">Он:</span> ПрЮвЕт! Как делы? ))</div>`;
         chatHistory.scrollTop = chatHistory.scrollHeight;
-    }, 1200);
+    }, 1000);
 }
 
-// Позволяет отправлять сообщение по нажатию Enter
-chatInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        sendMessage();
-    }
-});
+// Отправка по Enter
+chatInput.addEventListener("keypress", (e) => { if(e.key === "Enter") sendMessage(); });
